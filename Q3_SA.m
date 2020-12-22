@@ -1,0 +1,62 @@
+%模拟退火解问题3
+tic;
+%初始解
+t1=183.9;t2=186.7;t3=225.2;t4=263.2;v=0.0156;
+solu=[t1,t2,t3,t4,v];
+%L:每个温度下迭代次数
+L=10;
+%r:冷却系数
+R=0.5;
+%Te:温度下限
+Te=0.01;
+%T0:初始温度
+T0=100;
+%S:面积
+t=T0;
+while(t>Te)
+    i=0;
+    while(i<L)
+        ptemp1=model_function3(solu(1),solu(2),solu(3),solu(4),solu(5));
+        S=getarea2(solu(1),solu(2),solu(3),solu(4),solu(5));
+        solu2=getNewVec(solu,0.1,0.0001);
+        [j,ptemp2]=ifallowed(solu2(1),solu2(2),solu2(3),solu2(4),solu2(5));
+        if(j==1)
+            ds=getarea(ptemp2,0.5)-S;
+            if(ds<0)
+                solu=solu2;
+                i=i+1;
+            else
+                p=exp(-ds/t);
+                if(rand()<p)
+                    solu=solu2;
+                    i=i+1;
+                else
+                    i=i+1;
+                end
+            end
+        end
+    end
+    t=t*R;
+end
+%接爬山法
+st=0;
+while(st<32)
+    ifchange=0;
+    S=getarea2(solu(1),solu(2),solu(3),solu(4),solu(5));
+    solu2=getNewVec(solu,0.01,0.00005);
+    [j,ptemp2]=ifallowed(solu2(1),solu2(2),solu2(3),solu2(4),solu2(5));
+    if(j==1)
+        ds=getarea(ptemp2,0.5)-S;
+        if(ds<0)
+            ifchange=1;
+            solu=solu2;
+            i=i+1;
+        end
+    end
+    if(ifchange==1)
+        st=0;
+    else
+        st=st+1;
+    end
+end
+toc;
